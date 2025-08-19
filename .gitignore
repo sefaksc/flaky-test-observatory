@@ -1,0 +1,31 @@
+# OS / IDE
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Java / Maven
+target/
+*.iml
+.mvn/wrapper/maven-wrapper.jar
+
+# Node / Next.js
+node_modules/
+.next/
+.next-cache/
+dist/
+out/
+
+# Env / local data
+.env
+.env.local
+.env.*.local
+*.log
+logs/
+data/
+tmp/
+coverage/
+
+# Docker
+*.pid
+**/postgres-data/

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="CalcSuite" tests="3" failures="1" errors="0" skipped="0" timestamp="2025-08-19T17:00:00Z">
+    <testcase classname="calc.AdditionTest" name="addsTwoNumbers" time="0.012" file="calc/AdditionTest.java"/>
+    <testcase classname="calc.DivisionTest" name="divByZero" time="0.034" file="calc/DivisionTest.java">
+        <failure message="java.lang.ArithmeticException: / by zero"><![CDATA[Stacktrace...]]></failure>
+    </testcase>
+    <testcase classname="calc.LegacyTest" name="oldCase" time="0.002" file="calc/LegacyTest.java"/>
+</testsuite>

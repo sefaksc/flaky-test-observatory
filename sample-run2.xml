@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="CalcSuite" tests="3" failures="0" errors="0" skipped="0" timestamp="2025-08-20T17:00:00Z">
+    <testcase classname="calc.AdditionTest" name="addsTwoNumbers" time="0.010" file="calc/AdditionTest.java"/>
+    <testcase classname="calc.DivisionTest" name="divByZero" time="0.020" file="calc/DivisionTest.java"/>
+    <testcase classname="calc.LegacyTest" name="oldCase" time="0.002" file="calc/LegacyTest.java"/>
+</testsuite>
