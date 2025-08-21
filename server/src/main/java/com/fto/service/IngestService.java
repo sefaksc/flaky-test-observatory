@@ -1,5 +1,6 @@
 package com.fto.service;
 
+import com.fto.api.ingest.StatusNormalizer;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -60,7 +61,8 @@ public class IngestService {
         for (JunitXmlParser.ParsedCase pc : report.cases) {
             UUID caseId = upsertTestCase(projectId, pc.suite, pc.name, pc.file);
             touchedCases.add(caseId);
-            String status = pc.status;
+            String rawStatus = pc.status;
+            String status = StatusNormalizer.normalize(rawStatus);
             String errHash = (status.equals("failed") || status.equals("error")) && pc.failureMessage != null
                     ? sha1Hex(pc.failureMessage)
                     : null;
@@ -74,10 +76,9 @@ public class IngestService {
 
             inserted++;
             switch (status) {
-                case "failed" -> failed++;
-                case "skipped" -> skipped++;
-                case "passed" -> passed++;
-                case "error" -> errored++;
+                case "FAILED"  -> { failed++; if (rawStatus != null && rawStatus.equalsIgnoreCase("error")) errored++; }
+                case "SKIPPED" -> skipped++;
+                case "PASSED"  -> passed++;
             }
         }
 
