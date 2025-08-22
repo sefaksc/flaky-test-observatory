@@ -11,8 +11,8 @@ import {
   Typography,
   Paper,
 } from "@mui/material";
-import TopFlakyTable from "../../components/TopFlakyTable";
-import type { TopFlakyResponse } from "../../lib/fto";
+import TopFlakyTable from "../../../components/TopFlakyTable";
+import type { TopFlakyResponse } from "../../../lib/fto";
 
 export default function FlakyPage() {
   const [project, setProject] = React.useState("demo");
