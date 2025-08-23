@@ -8,6 +8,7 @@ export type TopFlakyItem = {
   failRate: number;
   flips: number;
   lastSeenAt: string | null;
+  score: number; // 0..1
 };
 
 export type TopFlakyResponse = {

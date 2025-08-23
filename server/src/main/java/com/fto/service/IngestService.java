@@ -5,7 +5,9 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.sql.Timestamp;
 import java.time.Instant;
@@ -33,10 +35,21 @@ public class IngestService {
         if (projectId == null) throw new IllegalArgumentException("Invalid project token");
 
         byte[] bytes = junitXml.readAllBytes();
-        String importHash = sha256Hex(bytes);
+
+        String bodyHash = sha256Hex(bytes);
+
+        String branchNorm = branch != null ? branch : "";
+        String commitNorm = commitSha != null ? commitSha : "";
+
+        ByteArrayOutputStream bos = new ByteArrayOutputStream(bytes.length + 128);
+        bos.write(bytes);
+        bos.write(("\n#branch=" + branchNorm).getBytes(StandardCharsets.UTF_8));
+        bos.write(("\n#commit=" + commitNorm).getBytes(StandardCharsets.UTF_8));
+
+        String importHash = sha256Hex(bos.toByteArray());
 
         // Idempotent: aynı import_hash varsa mevcut run'ı döndür
-        UUID existingRun = findRunByImportHash(projectId, importHash);
+        UUID existingRun = findRunByHashes(projectId, bodyHash, importHash, branchNorm);
         if (existingRun != null) {
             return Map.of(
                     "duplicate", true,
@@ -107,6 +120,26 @@ public class IngestService {
         List<UUID> list = jdbc.query("SELECT id FROM test_runs WHERE project_id = ? AND import_hash = ?",
                 (rs, i) -> (UUID) rs.getObject(1), projectId, hash);
         return list.isEmpty() ? null : list.get(0);
+    }
+
+    private UUID findRunByHashes(UUID projectId, String bodyHash, String importHash, String branch) {
+        // - Yeni kural: import_hash = yeni hash -> direkt eşle
+        // - Eski kural: import_hash = bodyHash + branch eşitse duplicate say
+        var rows = jdbc.query("""
+        SELECT id
+        FROM test_runs
+        WHERE project_id = ?
+          AND (
+                import_hash = ?                              -- yeni hash
+             OR (import_hash = ? AND COALESCE(branch,'') = ?) -- eski hash + aynı branch
+          )
+        ORDER BY started_at DESC
+        LIMIT 1
+        """,
+                (rs, n) -> (UUID) rs.getObject("id"),
+                projectId, importHash, bodyHash, branch == null ? "" : branch
+        );
+        return rows.isEmpty() ? null : rows.get(0);
     }
 
     private UUID upsertTestCase(UUID projectId, String suite, String name, String file) {

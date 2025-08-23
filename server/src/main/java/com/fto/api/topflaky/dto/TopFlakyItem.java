@@ -14,4 +14,5 @@ public class TopFlakyItem {
     public double failRate; // 0..1
     public int flips; // PASS/FAIL geçiş sayısı
     public Instant lastSeenAt;
+    public double score; // 0..1 (skor v0)
 }

@@ -1,0 +1,14 @@
+{
+  "name": "fto-root",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "gen:synthetic": "node scripts/synthetic-junit.mjs",
+    "ingest:synthetic": "node scripts/ingest-synthetic.mjs",
+    "ingest:synthetic:dev": "node scripts/ingest-synthetic.mjs --branch=dev",
+
+    "//": "Aşağıdakiler opsiyonel: curl ile Windows/Linux için kısa yollar",
+    "ingest:synthetic:win:main": "powershell -NoProfile -Command \"Get-ChildItem synthetic\\*.xml | ForEach-Object { curl.exe -s -X POST 'http://localhost:8080/ingest/junit' -H 'X-Project-Token: dev-token-123' -H 'X-Branch: main' -F 'file=@$($_.FullName);type=application/xml' > $null }\"",
+    "ingest:synthetic:nix:main": "bash -lc \"for f in synthetic/*.xml; do curl -s -X POST 'http://localhost:8080/ingest/junit' -H 'X-Project-Token: dev-token-123' -H 'X-Branch: main' -F 'file=@$f;type=application/xml' >/dev/null; done\""
+  }
+}

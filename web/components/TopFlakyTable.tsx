@@ -1,5 +1,4 @@
 "use client";
-
 import * as React from "react";
 import {
   Table,
@@ -10,11 +9,12 @@ import {
   TableRow,
   Paper,
   Chip,
+  LinearProgress,
+  Box,
 } from "@mui/material";
 import { TopFlakyItem, pct, fmtDate } from "../lib/fto";
 
 type Props = { items: TopFlakyItem[] };
-
 export default function TopFlakyTable({ items }: Props) {
   if (!items || items.length === 0) {
     return (
@@ -31,7 +31,6 @@ export default function TopFlakyTable({ items }: Props) {
       </Paper>
     );
   }
-
   return (
     <TableContainer component={Paper} sx={{ borderRadius: 2 }}>
       <Table size="small" stickyHeader>
@@ -44,6 +43,7 @@ export default function TopFlakyTable({ items }: Props) {
             <TableCell align="right">Fail Rate</TableCell>
             <TableCell align="right">Flips</TableCell>
             <TableCell>Last Seen</TableCell>
+            <TableCell align="right">Score</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -66,6 +66,17 @@ export default function TopFlakyTable({ items }: Props) {
               <TableCell align="right">{pct(it.failRate)}</TableCell>
               <TableCell align="right">{it.flips}</TableCell>
               <TableCell>{fmtDate(it.lastSeenAt)}</TableCell>
+              <TableCell align="right">
+                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                  <span>{pct(it.score)}</span>
+                  <Box sx={{ flex: 1 }}>
+                    <LinearProgress
+                      variant="determinate"
+                      value={Math.max(0, Math.min(100, it.score * 100))}
+                    />
+                  </Box>
+                </Box>
+              </TableCell>
             </TableRow>
           ))}
         </TableBody>

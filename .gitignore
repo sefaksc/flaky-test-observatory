@@ -25,6 +25,7 @@ logs/
 data/
 tmp/
 coverage/
+synthetic/
 
 # Docker
 *.pid
